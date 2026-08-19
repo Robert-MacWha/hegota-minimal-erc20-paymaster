@@ -1,0 +1,6 @@
+[package]
+name = "hegota-minimal-erc20-paymaster"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
