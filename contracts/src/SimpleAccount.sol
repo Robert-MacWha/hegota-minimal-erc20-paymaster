@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {FrameOps} from "./FrameOps.sol";
+import {FrameOps} from "./lib/FrameOps.sol";
 
 /// @title SimpleAccount
 /// @notice Minimal owner-signature-gated custom spender rule for EIP-8141
@@ -43,6 +43,6 @@ contract SimpleAccount {
         address recovered = ecrecover(bytes32(sigHash), v, r, s);
         require(recovered != address(0) && recovered == owner, "bad signature");
 
-        opcodeLib.approve("", FrameOps.Scope.ExecutionAndPayment);
+        opcodeLib.approve(FrameOps.Scope.ExecutionAndPayment);
     }
 }

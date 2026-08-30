@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {IOpcodeLib} from "./IOpcodeLib.sol";
+import {IOpcodeLib} from "../interfaces/IOpcodeLib.sol";
 
 /// @title FrameOps
 /// @notice Solidity wrappers around `OpcodeLib`'s raw delegatecall-based opcode calls.
@@ -13,14 +13,19 @@ library FrameOps {
         ExecutionAndPayment
     }
 
-    function _call(address opcodeLib, bytes memory data) private returns (bytes memory) {
-        (bool ok, bytes memory ret) = opcodeLib.delegatecall(data);
-        require(ok, "FrameOps: opcode call failed");
-        return ret;
+    /// Declares the transaction authorised for `scope`, returning no data.
+    function approve(address opcodeLib, Scope scope) internal {
+        bytes memory outputData;
+        _call(
+            opcodeLib,
+            abi.encodePacked(
+                abi.encodeWithSelector(IOpcodeLib.approve.selector, outputData.length, uint8(scope)), outputData
+            )
+        );
     }
 
     /// Declares the transaction authorised for `scope`, returning
-    /// `outputData` as the frame's return data; pass `""` for none.
+    /// `outputData` as the frame's return data.
     function approve(address opcodeLib, bytes memory outputData, Scope scope) internal {
         _call(
             opcodeLib,
@@ -94,5 +99,11 @@ library FrameOps {
         returns (bytes memory)
     {
         return _call(opcodeLib, abi.encodeCall(IOpcodeLib.sigDataCopy, (dataOffset, length, signatureIndex)));
+    }
+
+    function _call(address opcodeLib, bytes memory data) private returns (bytes memory) {
+        (bool ok, bytes memory ret) = opcodeLib.delegatecall(data);
+        require(ok, "FrameOps: opcode call failed");
+        return ret;
     }
 }

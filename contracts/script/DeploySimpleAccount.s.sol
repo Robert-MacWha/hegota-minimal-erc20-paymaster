@@ -27,21 +27,13 @@ contract DeploySimpleAccountScript is Script {
         // vm.deployCode/getCode both require a non-null ABI in the artifact,
         // which standalone Yul objects don't get, so read the bytecode
         // straight out of the artifact JSON and deploy it manually.
-        string memory artifact = vm.readFile(
-            "out/OpcodeLib.yul/OpcodeLib.json"
-        );
-        bytes memory opcodeLibInitcode = vm.parseJsonBytes(
-            artifact,
-            ".bytecode.object"
-        );
+        string memory artifact = vm.readFile("out/OpcodeLib.yul/OpcodeLib.json");
+        bytes memory opcodeLibInitcode = vm.parseJsonBytes(artifact, ".bytecode.object");
 
         // The 2-arg overload assumes the standard CREATE2 deployer proxy,
         // which is also what forge's broadcaster routes a script's own
         // `create2` through - not the EOA broadcaster address directly.
-        address predicted = vm.computeCreate2Address(
-            OPCODELIB_SALT,
-            keccak256(opcodeLibInitcode)
-        );
+        address predicted = vm.computeCreate2Address(OPCODELIB_SALT, keccak256(opcodeLibInitcode));
 
         vm.startBroadcast();
 
@@ -53,18 +45,13 @@ contract DeploySimpleAccountScript is Script {
         } else {
             bytes32 salt = OPCODELIB_SALT;
             assembly {
-                opcodeLib := create2(
-                    0,
-                    add(opcodeLibInitcode, 0x20),
-                    mload(opcodeLibInitcode),
-                    salt
-                )
+                opcodeLib := create2(0, add(opcodeLibInitcode, 0x20), mload(opcodeLibInitcode), salt)
             }
             require(opcodeLib == predicted, "OpcodeLib deployment failed");
         }
 
         SimpleAccount account = new SimpleAccount(owner, opcodeLib);
-        (bool ok, ) = address(account).call{value: fundWei}("");
+        (bool ok,) = address(account).call{value: fundWei}("");
         require(ok, "funding transfer failed");
 
         vm.stopBroadcast();
