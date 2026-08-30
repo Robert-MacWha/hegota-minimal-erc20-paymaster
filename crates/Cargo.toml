@@ -1,0 +1,18 @@
+[package]
+name = "hegota-minimal-erc20-paymaster"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ethrex-rpc = { git = "https://github.com/lambdaclass/ethrex", branch = "hegota-devnet" }
+ethrex-common = { git = "https://github.com/lambdaclass/ethrex", branch = "hegota-devnet" }
+anyhow = "1.0.104"
+clap = { version = "4.6.6", features = ["derive"] }
+hex = "0.4"
+secp256k1 = "0.30.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1.53.1", features = ["full"] }
+tracing = "0.1.44"
+tracing-subscriber = "0.3.23"
+url = "2"
