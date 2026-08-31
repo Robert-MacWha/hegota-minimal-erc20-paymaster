@@ -11,6 +11,8 @@ use ethrex_rpc::types::block_identifier::{BlockIdentifier, BlockTag};
 use hegota_minimal_erc20_paymaster::{
     address_from_secret_key, parse_secret_key, receipt, self_verify_frame, sender_frame, sign,
 };
+use secp256k1::SecretKey;
+use url::Url;
 
 #[derive(Parser)]
 struct Args {
@@ -19,6 +21,12 @@ struct Args {
     /// Amount to send, in wei
     #[arg(value_parser = parse_wei, default_value = "1000000000000000")]
     amount_wei: U256,
+    /// JSON-RPC endpoint of a frame-tx-capable ethrex node
+    #[arg(long, env = "RPC_URL")]
+    rpc_url: Url,
+    /// Sender private key, `0x`-prefixed or bare hex
+    #[arg(long, env = "PRIVATE_KEY", value_parser = parse_secret_key, hide_env_values = true)]
+    private_key: SecretKey,
 }
 
 fn parse_wei(s: &str) -> Result<U256, String> {
@@ -29,13 +37,10 @@ fn parse_wei(s: &str) -> Result<U256, String> {
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
-    let rpc_url = std::env::var("RPC_URL").context("RPC_URL required")?;
-    let private_key = std::env::var("PRIVATE_KEY").context("PRIVATE_KEY required")?;
-    let secret_key = parse_secret_key(&private_key)?;
+    let secret_key = args.private_key;
     let sender = address_from_secret_key(&secret_key);
 
-    let client = EthClient::new(rpc_url.parse().context("invalid RPC_URL")?)
-        .context("Failed to connect to provider")?;
+    let client = EthClient::new(args.rpc_url).context("Failed to connect to provider")?;
 
     let chain_id = client.get_chain_id().await?.as_u64();
     let nonce = client
@@ -64,7 +69,7 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    sign(&mut tx, 0, &secret_key)?;
+    sign(&mut tx, 0, &secret_key);
     let raw = Transaction::FrameTransaction(tx).encode_canonical_to_vec();
 
     let hash: H256 = client

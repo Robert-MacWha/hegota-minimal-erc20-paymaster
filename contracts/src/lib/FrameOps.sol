@@ -6,6 +6,8 @@ import {IOpcodeLib} from "../interfaces/IOpcodeLib.sol";
 /// @title FrameOps
 /// @notice Solidity wrappers around `OpcodeLib`'s raw delegatecall-based opcode calls.
 library FrameOps {
+    address internal constant RECENT_ROOT_ADDRESS = 0x0000000000000000000000000000000000008272;
+
     enum Scope {
         None,
         Payment,
@@ -68,6 +70,12 @@ library FrameOps {
     /// Reads a recent-root reference from the transaction envelope.
     function recentRootRefLoad(address opcodeLib, uint256 field, uint256 index) internal returns (uint256) {
         return abi.decode(_call(opcodeLib, abi.encodeCall(IOpcodeLib.recentRootRefLoad, (field, index))), (uint256));
+    }
+
+    /// Publishes `root` under `salt` as a recent root.
+    function publishRecentRoot(bytes32 salt, bytes32 root) internal {
+        (bool ok,) = RECENT_ROOT_ADDRESS.call(abi.encodePacked(salt, root));
+        require(ok, "FrameOps: recent root publish failed");
     }
 
     /// Reads gas context and execution facts. POST_TX frames only.

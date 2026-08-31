@@ -1109,7 +1109,7 @@ dependencies = [
 [[package]]
 name = "ethrex-blockchain"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "bytes",
  "crossbeam",
@@ -1121,6 +1121,7 @@ dependencies = [
  "ethrex-storage",
  "ethrex-trie",
  "ethrex-vm",
+ "hex-literal",
  "libssz",
  "libssz-merkle",
  "rayon",
@@ -1134,7 +1135,7 @@ dependencies = [
 [[package]]
 name = "ethrex-common"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "bytes",
  "crc32fast",
@@ -1168,7 +1169,7 @@ dependencies = [
 [[package]]
 name = "ethrex-crypto"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "ark-bn254",
  "ark-ec",
@@ -1190,7 +1191,7 @@ dependencies = [
 [[package]]
 name = "ethrex-guest-program"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "bytes",
  "ethereum-types",
@@ -1209,7 +1210,7 @@ dependencies = [
 [[package]]
 name = "ethrex-l2-common"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "bytes",
  "ethereum-types",
@@ -1227,7 +1228,7 @@ dependencies = [
 [[package]]
 name = "ethrex-levm"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "bytes",
  "derive_more",
@@ -1245,7 +1246,7 @@ dependencies = [
 [[package]]
 name = "ethrex-metrics"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "axum",
  "ethrex-common",
@@ -1261,7 +1262,7 @@ dependencies = [
 [[package]]
 name = "ethrex-p2p"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "aes",
  "aes-gcm",
@@ -1303,7 +1304,7 @@ dependencies = [
 [[package]]
 name = "ethrex-rlp"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "bytes",
  "ethereum-types",
@@ -1313,7 +1314,7 @@ dependencies = [
 [[package]]
 name = "ethrex-rpc"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "axum",
  "axum-extra",
@@ -1353,7 +1354,7 @@ dependencies = [
 [[package]]
 name = "ethrex-storage"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1375,7 +1376,7 @@ dependencies = [
 [[package]]
 name = "ethrex-trie"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1395,7 +1396,7 @@ dependencies = [
 [[package]]
 name = "ethrex-vm"
 version = "23.0.0"
-source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-devnet#6f9f055a41883c4d996ff17b8a37174ff7524527"
+source = "git+https://github.com/lambdaclass/ethrex?branch=hegota-testnet#f9b00583ec7407447b2228bc8e1341bbf4b5dd0f"
 dependencies = [
  "bytes",
  "derive_more",

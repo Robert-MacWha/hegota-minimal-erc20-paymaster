@@ -3,13 +3,15 @@
 //! one frame transaction signed by the account's real owner (expect
 //! approval) and one signed by an unrelated key (expect rejection).
 //!
-//! Env: RPC_URL, SIMPLE_ACCOUNT (deployed address, see
-//! contracts/script/DeploySimpleAccount.s.sol), OWNER_PRIVATE_KEY (matching
-//! the OWNER address passed to that script).
+//! Configured by flag or the matching env var: --rpc-url/RPC_URL,
+//! --simple-account/SIMPLE_ACCOUNT (deployed address, see
+//! contracts/script/DeploySimpleAccount.s.sol), --owner-private-key/
+//! OWNER_PRIVATE_KEY (matching the OWNER address passed to that script).
 
 use std::time::Duration;
 
 use anyhow::{Context, Result, bail};
+use clap::Parser;
 use ethrex_common::types::{
     FRAME_SIG_SCHEME_ARBITRARY, FrameSignature, FrameTransaction, Transaction,
 };
@@ -21,9 +23,23 @@ use hegota_minimal_erc20_paymaster::{
     parse_secret_key, receipt, self_verify_frame, sender_frame, sign_recoverable,
 };
 use secp256k1::SecretKey;
+use url::Url;
 
 /// `validate()` selector, from `contracts/src/SimpleAccount.sol`.
 const VALIDATE_SELECTOR: [u8; 4] = [0x69, 0x01, 0xf6, 0x68];
+
+#[derive(Parser)]
+struct Args {
+    /// JSON-RPC endpoint of a frame-tx-capable ethrex node
+    #[arg(long, env = "RPC_URL")]
+    rpc_url: Url,
+    /// Deployed `SimpleAccount` address
+    #[arg(long, env = "SIMPLE_ACCOUNT")]
+    simple_account: Address,
+    /// Private key of the account's owner, `0x`-prefixed or bare hex
+    #[arg(long, env = "OWNER_PRIVATE_KEY", value_parser = parse_secret_key, hide_env_values = true)]
+    owner_private_key: SecretKey,
+}
 
 /// Builds a [self-verify, sender] frame tx targeting `account`. The VERIFY
 /// frame's calldata is just the bare `validate()` selector; the real
@@ -121,21 +137,15 @@ async fn run_case(
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let rpc_url = std::env::var("RPC_URL").context("RPC_URL required")?;
-    let account: Address = std::env::var("SIMPLE_ACCOUNT")
-        .context("SIMPLE_ACCOUNT required")?
-        .parse()
-        .context("invalid SIMPLE_ACCOUNT")?;
-    let owner_key = parse_secret_key(
-        &std::env::var("OWNER_PRIVATE_KEY").context("OWNER_PRIVATE_KEY required")?,
-    )?;
+    let args = Args::parse();
+    let account = args.simple_account;
+    let owner_key = args.owner_private_key;
     // Deterministic, unrelated key for the rejection case - no private key
     // controls this hash's preimage, so it can never match the real owner.
     let wrong_key = SecretKey::from_slice(&keccak(b"definitely-not-the-account-owner").0)
         .expect("keccak digest is a valid secp256k1 scalar");
 
-    let client = EthClient::new(rpc_url.parse().context("invalid RPC_URL")?)
-        .context("failed to connect to provider")?;
+    let client = EthClient::new(args.rpc_url).context("failed to connect to provider")?;
     let scratch_recipient = Address::from(keccak(b"spender-rules-scratch-recipient"));
 
     println!("== case 1: correct owner signature (expect approval) ==");

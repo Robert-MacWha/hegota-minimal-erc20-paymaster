@@ -1,9 +1,7 @@
 pub mod receipt;
 
 use anyhow::{Context, Result};
-use ethrex_common::types::{
-    APPROVE_EXECUTION_AND_PAYMENT, Frame, FrameEncoding, FrameLimits, FrameMode, FrameTransaction,
-};
+use ethrex_common::types::{APPROVE_EXECUTION_AND_PAYMENT, Frame, FrameMode, FrameTransaction};
 use ethrex_common::utils::keccak;
 use ethrex_common::{Address, Bytes, H256, U256};
 use secp256k1::{Message, SECP256K1, SecretKey};
@@ -22,37 +20,23 @@ pub fn address_from_secret_key(secret_key: &SecretKey) -> Address {
     ))
 }
 
-/// Note: `encoding` is `Scalar`, not the newer `Limits` split — the live
-/// devnet this project targets (`rpc1.privacy.ethrex.xyz`) runs a
-/// `hegota-devnet` build that predates the `FrameLimits`/`FrameEncoding`
-/// wire-format split in the current upstream branch, and rejects the
-/// `Limits`-encoded list shape for a frame's `gas_limit` slot.
 pub fn self_verify_frame(sender: Address, gas_limit: u64) -> Frame {
     Frame {
         mode: FrameMode::Verify as u8,
         flags: APPROVE_EXECUTION_AND_PAYMENT,
         target: Some(sender),
-        limits: FrameLimits {
-            execution: gas_limit,
-            state: 0,
-        },
-        encoding: FrameEncoding::Scalar,
+        gas_limit,
         value: U256::zero(),
         data: Bytes::new(),
     }
 }
 
-/// See [`self_verify_frame`]'s note on why `encoding` is `Scalar`.
 pub fn sender_frame(target: Address, value: U256, data: Bytes, gas_limit: u64) -> Frame {
     Frame {
         mode: FrameMode::Sender as u8,
         flags: 0,
         target: Some(target),
-        limits: FrameLimits {
-            execution: gas_limit,
-            state: 0,
-        },
-        encoding: FrameEncoding::Scalar,
+        gas_limit,
         value,
         data,
     }
@@ -71,11 +55,10 @@ pub fn sign_recoverable(hash: H256, signer: &SecretKey) -> (u8, [u8; 64]) {
 /// Signs `tx`'s signature hash and fills in `signatures[sig_index]` with a
 /// `v || r || s` SECP256K1 signature, as required by frame-transaction
 /// verification (see `validate_frame_signatures` in ethrex's EVM crate).
-pub fn sign(tx: &mut FrameTransaction, sig_index: usize, signer: &SecretKey) -> Result<()> {
+pub fn sign(tx: &mut FrameTransaction, sig_index: usize, signer: &SecretKey) {
     let (v, sig) = sign_recoverable(tx.compute_sig_hash(), signer);
     let mut raw = Vec::with_capacity(65);
     raw.push(v);
     raw.extend_from_slice(&sig);
     tx.signatures[sig_index].signature = Bytes::from(raw);
-    Ok(())
 }
