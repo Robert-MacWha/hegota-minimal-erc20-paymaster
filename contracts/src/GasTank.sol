@@ -17,11 +17,6 @@ import {MerkleTree} from "./lib/MerkleTree.sol";
 ///   (c) the subsequent frames are restricted to calling `settle()` and `execute()`
 /// on this contract. This prevents bad actors from moving value out of the
 /// contract since it acts as `SENDER` for the remaining frames.
-///
-/// Immediately after a successful verify call, settle can be called to deposit the remaining
-/// ETH into a new note for the owner.
-///
-/// Expected call pattern: verify() -> settle() -> execute()*
 contract GasTank {
     using FrameOps for address;
     using MerkleTree for MerkleTree.Tree;
@@ -66,7 +61,8 @@ contract GasTank {
         opcodeLib.approve(FrameOps.Scope.ExecutionAndPayment);
     }
 
-    /// Withdraws all ETH from the GasTank to the given address, after verifying that the note can be spent.
+    /// Withdraws all ETH from the GasTank to the given address, after verifying
+    /// that the note can be spent.
     function withdraw(
         address payable to,
         address owner,
@@ -85,6 +81,8 @@ contract GasTank {
 
     /// Creates a new note for the owner with the remaining balance after a spend,
     /// and publishes the new root.
+    ///
+    /// @dev Can only be called from a frame immediately following a verify frame calling `verify()`.
     function settle(bytes32 newSalt) external {
         uint256 prevIndex = opcodeLib.txParam(0x0A) - 1;
         require(opcodeLib.frameParam(prevIndex, 0) == uint256(uint160(address(this))), "GasTank: prior frame target");
