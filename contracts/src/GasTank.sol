@@ -14,6 +14,9 @@ import {MerkleTree} from "./lib/MerkleTree.sol";
 ///
 ///   (a) the verify frame requires the note's inclusion in the merkle tree,
 ///   (b) the note is nullified by the transaction's keyed nonce.
+///   (c) the subsequent frames are restricted to calling `settle()` and `execute()`
+/// on this contract. This prevents bad actors from moving value out of the
+/// contract since it acts as `SENDER` for the remaining frames.
 ///
 /// Immediately after a successful verify call, settle can be called to deposit the remaining
 /// ETH into a new note for the owner.
